@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>{{title}}</title>
+  </head>
+  <body>
+    <div>
+      {{> _nav }}
+      {{> _header }}
+
+      <div class="container">
+        {{> _sidebar }}
+
+        <div class="container">
+          {{{ body }}}
+        </div>
+
+        {{> _footer }}
+
+      </div>
+    </div>
+    <script src="jquery/jquery.min.js"></script>
+    <script src="popper/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>
