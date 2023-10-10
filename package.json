@@ -5,11 +5,17 @@
   "main": "app.js",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "node ./src/bin/www",
+    "watch": "nodemon ./src/bin/www",
+    "debug": "DEBUG=bbb-relay:* yarn run watch",
+    "migrate": "npx sequelize-cli db:migrate",
+    "undo-migrate": "npx sequelize-cli db:migrate:undo:all",
+    "seed": "npx sequelize-cli db:seed:all",
+    "undo-seed": "npx sequelize-cli db:seed:undo:all",
+    "test": "uvu ./src/tests"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "bootstrap": "^5.3.1",
     "cookie-parser": "^1.4.6",

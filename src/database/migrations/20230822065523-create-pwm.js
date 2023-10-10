@@ -1,28 +1,34 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('PWMs', {
+  async up(queryInterface, DataTypes) {
+    await queryInterface.createTable('pwm', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: DataTypes.INTEGER
       },
-      id: {
-        type: Sequelize.INTEGER
+      uuid: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV1
+      },
+      pin: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique: true
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: DataTypes.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: DataTypes.DATE
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('PWMs');
+    await queryInterface.dropTable('pwm');
   }
 };

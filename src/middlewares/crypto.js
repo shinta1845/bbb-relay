@@ -1,18 +1,11 @@
 const crypto = require('crypto');
 
-const hashPassword = (password) => {
-    const salt = crypto.randomBytes(16);
-    const hash = crypto.pbkdf2(password, salt, 310000, 32, 'sha512', async function (err, hashPassword) {
-        if (err) throw err;
-        return hashPassword;
-    });
-    return hash;
+const generateSalt = () => {
+    return crypto.randomBytes(16).toString('hex');
 }
 
-const getHashedPassword = (password) => {
-    const sha256 = crypto.createHash('sha256');
-    const hash = sha256.update(password).digest('base64');
-    return hash;
+const encryptPassword = (password, salt) => {
+    return crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex');;
 }
 
 const generateAuthToken = () => {
@@ -20,7 +13,7 @@ const generateAuthToken = () => {
 }
 
 module.exports = {
-    getHashedPassword,
-    generateAuthToken,
-    hashPassword
+    generateSalt,
+    encryptPassword,
+    generateAuthToken
 }

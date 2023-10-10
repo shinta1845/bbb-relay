@@ -1,10 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user.js');
+const user = require('../models/user.js');
 
-router.get('/', function (req, res, next) {
-    res.render('register', { title: 'User', header: 'Register' });
-}
-);
+const userIndex = (req, res, next) => {
+    res.render('index', { title: 'User' });
+};
 
-module.exports = router;
+const userEdit = (req, res, next) => {
+    res.render('edit', { title: 'User' });
+};
+
+module.exports = {
+    userIndex,
+    userEdit
+};

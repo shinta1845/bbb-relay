@@ -8,30 +8,27 @@ const bodyParser = require('body-parser');
 // server: express - session || client: cookie - session
 const serverSession = require('express-session');
 const cookieSession = require('cookie-session');
-const views = require('./config/viewEngine');
-const sequelize = require('./config/connectDB');
-const router = require('./router.js');
+const viewEngine = require('./config/viewEngine');
+const router = require('./config/router.js');
 const passport = require('passport');
 
-sequelize.sync({
-  force: true // drop table if exists
-}).then(() => {
-  console.log("Database & tables created!");
-});
-
-
-
+// import express framework
 const app = express();
 // const admin = express(); // the sub app
 
-views(app);
+// setting up view engine
+viewEngine(app);
 
+// using public static
 app.use(express.static(path.join(__dirname, 'public')));
 
+// support URL-encoded bodies
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false })); // support URL-encoded bodies
+app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(upload.array());
-app.use(cookieParser()); // parse cookie from the HTTP request
+
+// parse cookie from the HTTP request
+app.use(cookieParser());
 app.use(serverSession({
   secret: "secret",
   // store: myStore,
@@ -48,16 +45,20 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/css", express.static(path.join(__dirname, "../node_modules/bootstrap/dist/css")));
 app.use("/jquery", express.static(path.join(__dirname, "../node_modules/jquery/dist")));
-app.use("/popper", express.static(path.join(__dirname, "../node_modules/popper.js/dist")));
+app.use("/popper", express.static(path.join(__dirname, "../node_modules/@popperjs/core/dist/umd")));
 app.use("/js", express.static(path.join(__dirname, "../node_modules/bootstrap/dist/js")));
 
-// Routing
+require('./database/connect');
+
+// using routes
 app.use('/', router);
 
 // // catch 404 and forward to error handler
 // app.use(function(req, res, next) {
-//   next(createError(404));
-//   // res.status(404).send("Sorry can't find that!")
+//   // next(createError(404));
+//   res.status(404).json({
+//     error: 'Sorry can't find that!'
+//   });
 // });
 
 // // error handler
@@ -68,8 +69,9 @@ app.use('/', router);
 //   res.locals.error = req.app.get('env') === 'local' ? err : {};
 
 //   // render the error page
-//   res.status(err.status || 500);
-//   res.render('error');
+//   res.status(err.status || 500).json({
+//     error: err.message
+//   });
 // });
 
 module.exports = app;

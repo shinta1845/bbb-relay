@@ -1,4 +1,5 @@
 'use strict';
+const auth = require('../middlewares/crypto');
 const {
   Model
 } = require('sequelize');
@@ -12,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
+
+    toJSON(){
+      return {...this.get(), id: undefined, password: undefined, salt: undefined}
+    }
   }
   User.init({
     id: {
@@ -20,10 +25,18 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       allowNull: false
     },
+    uuid: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV1
+    },
     username: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING(25),
       allowNull: false,
-      unique: true
+      unique: true,
+      validate: {
+        notNull: { msg: 'User must have an username' },
+        notEmpty: { msg: 'Username must not be empty' },
+      }
     },
     firstName: {
       type: DataTypes.STRING,
@@ -31,24 +44,64 @@ module.exports = (sequelize, DataTypes) => {
     },
     lastName: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true,
     },
     email: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      validate: {
+        notNull: { msg: 'User must have an email' },
+        notEmpty: { msg: 'Email must not be empty' },
+        isEmail: { msg: 'Must be a valid email address' }
+      }
     },
     password: {
-      type: DataTypes.BLOB,
+      type: DataTypes.STRING,
       allowNull: false
     },
     salt: {
-      type: DataTypes.BLOB,
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    role: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+      defaultValue: 'user'
+    },
+    createAt: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    updateAt: {
+      type: DataTypes.DATE,
       allowNull: false
     }
   }, {
     sequelize,
+    tableName: 'user',
     modelName: 'User',
+    hooks: {
+      beforeCreate: async (user) => {
+        if (user.password) {
+          user.salt = auth.generateSalt();
+          user.password = auth.encryptPassword(user.password, user.salt);
+        }
+      },
+      beforeUpdate: async (user) => {
+        if (user.password) {
+          user.salt = auth.generateSalt();
+          user.password = auth.encryptPassword(user.password, user.salt);
+        }
+      }
+    },
+    instanceMethods: {
+      validPassword: (password) => {
+
+      }
+    }
   });
+  User.prototype.validPassword = async (password, hash) => {
+
+  }
   return User;
 };
